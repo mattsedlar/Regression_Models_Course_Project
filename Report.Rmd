@@ -1,0 +1,42 @@
+---
+title: "Is an Automatic or Manual Transmission Better for MPG?"
+author: "Matthew Sedlar"
+date: "October 19, 2015"
+output: html_document
+---
+
+## Executive Summary
+
+## Exploratory Analysis
+
+I started by looking at simple box plot of miles per gallon by automatic and manual transmission types. As figure 1 shows, the interquartile range for automatic transmissions is below the interquartile range of manual transmissions. There certainly appears to be a relationship better mpg and manual transmissions.
+
+```{r echo=FALSE, message=FALSE}
+
+library(ggplot2)
+
+# calling up and cloning data set for analysis
+# converting am variable to factor
+data(mtcars)
+analysis <- mtcars
+analysis$am <- sapply(analysis$am, function(x) ifelse(x==0, "automatic","manual"))
+
+p <- ggplot(analysis) + geom_boxplot(aes(x=am,y=mpg)) +
+  xlab("Transmission Type") +
+  ylab("Miles per Gallon (U.S.)") +
+  ggtitle("Miles per Gallon by Transmission Type")
+p
+
+```
+
+## Testing Independent X Variables
+
+## Model
+
+## Hypothesis Testing
+
+## Conclusion
+
+---
+
+# Appendix
