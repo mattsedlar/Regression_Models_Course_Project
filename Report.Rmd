@@ -14,6 +14,7 @@ I started by looking at simple box plot of miles per gallon by automatic and man
 ```{r echo=FALSE, message=FALSE}
 
 library(ggplot2)
+library(gridExtra)
 
 # calling up and cloning data set for analysis
 # converting am variable to factor
@@ -29,6 +30,10 @@ p
 
 ```
 
+While the difference between the average mpg for the transmission types is statistically significant (see Appendix A), a simple categorical variable cannot fully explain _why_ there is a difference. If you were to run out and buy any car with a manual transmission, what other variables result in better miles/gallon? We have to explore other variables.
+
+
+
 ## Testing Independent X Variables
 
 ## Model
@@ -40,3 +45,36 @@ p
 ---
 
 # Appendix
+
+### A: Automatic vs. Manual Hypothesis Testing
+
+$$H_0: \bar{X} = \bar{Y}$$
+$$H_1: \bar{X} \neq \bar{Y}$$
+
+```{r}
+transa <- subset(analysis,am=="automatic") 
+transm <- subset(analysis,am=="manual")
+
+t.test(transa$mpg,transm$mpg)
+```
+
+### B: Independent Variables by MPG, Faceted by Transmission Type
+
+```{r echo=FALSE}
+p.wt <- ggplot(analysis) + geom_point(aes(x=wt,y=mpg)) + facet_grid(.~am) +
+  xlab("weight")
+
+p.cyl <- ggplot(analysis) + geom_point(aes(x=cyl,y=mpg)) + facet_grid(.~am) +
+  xlab("number of cylinders")
+
+p.hp <- ggplot(analysis) + geom_point(aes(x=hp,y=mpg)) + facet_grid(.~am) +
+  xlab("horsepower")
+
+p.disp <- ggplot(analysis) + geom_point(aes(x=disp,y=mpg)) + facet_grid(.~am) +
+  xlab("displacement")
+
+p.carb <- ggplot(analysis) + geom_point(aes(x=carb,y=mpg)) + facet_grid(.~am) +
+  xlab("number of carburetors")
+
+grid.arrange(p.wt,p.cyl,p.hp, p.disp,p.carb,ncol=3,nrow=2)
+```
