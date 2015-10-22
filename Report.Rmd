@@ -1,17 +1,22 @@
 ---
-title: "Is an Automatic or Manual Transmission Better for MPG?"
+title: "Is an Automatic or Manual Transmission Better for Miles per Gallon?"
 author: "Matthew Sedlar"
 date: "October 19, 2015"
-output: html_document
+output: 
+  pdf_document: default
+  html_document:
+    keep_md: yes
 ---
 
 ## Executive Summary
 
 ## Exploratory Analysis
 
-I started by looking at simple box plot of miles per gallon by automatic and manual transmission types. As figure 1 shows, the interquartile range for automatic transmissions is below the interquartile range of manual transmissions. There certainly appears to be a relationship better mpg and manual transmissions.
+I started by looking at simple box plot of miles per gallon by automatic and manual transmission types. As figure 1 shows, the interquartile range for automatic transmissions is below the interquartile range of manual transmissions. There certainly appears to be a relationship between better mpg and manual transmissions.
 
-```{r echo=FALSE, message=FALSE}
+#### Figure 1
+
+```{r echo=FALSE, message=FALSE, fig.height=3, fig.width=4.5, fig.align='center'}
 
 library(ggplot2)
 library(gridExtra)
@@ -30,13 +35,11 @@ p
 
 ```
 
-While the difference between the average mpg for the transmission types is statistically significant (see Appendix A), a simple categorical variable cannot fully explain _why_ there is a difference. If you were to run out and buy any car with a manual transmission, what other variables result in better miles/gallon? We have to explore other variables.
+While the difference between the average mpg for the transmission types is statistically significant (see Appendix A), a simple categorical variable cannot fully explain _why_ there is a difference. We have to explore other variables that can help explain why.
 
+There are several candidates to choose from, including weight, number of cylinders, horsepower, displacement, and number of carburetors (see Appendix B). Several of these variables have something in common: the size of the car and power of the engine. For this report, I'm going to look at displacement, which represents both the size and power of the engine and shares a strong positive correlation with both weight and horsepower (see Appendix C).
 
-
-## Testing Independent X Variables
-
-## Model
+## Fitting a Model
 
 ## Hypothesis Testing
 
@@ -77,4 +80,23 @@ p.carb <- ggplot(analysis) + geom_point(aes(x=carb,y=mpg)) + facet_grid(.~am) +
   xlab("number of carburetors")
 
 grid.arrange(p.wt,p.cyl,p.hp, p.disp,p.carb,ncol=3,nrow=2)
+```
+
+### C: Displacement and its Correlation to Weight, Horsepower
+
+Displacement is the volume of an engine's cylinders, a general indicator of its size and power. Since it's safe to assume that large, powerful engines would not be commonplace in smaller cars -- such modifications would be outliers -- I found a strong, positive correlation (`r cor(analysis$disp,analysis$wt)`) between weight and displacement. There's a similar, although less strong (`r cor(analysis$disp,analysis$hp)`), correlation between horsepower (*definition here*) and displacement.
+
+```{r echo=FALSE, message=FALSE, fig.height=3, fig.width=5, fig.align='center'}
+p.dw <- ggplot(analysis,aes(x=disp,y=wt)) + 
+  geom_point() +
+  stat_smooth(method="lm") +
+  xlab("Displacement") +
+  ylab("Weight")
+p.dh <- ggplot(analysis, aes(x=disp,y=hp)) +
+  geom_point() +
+  stat_smooth(method="lm") +
+  xlab("Displacement") +
+  ylab("Horespower")
+
+grid.arrange(p.dw,p.dh,ncol=2,nrow=1, top="Testing Correlations Between Independent X Variables")
 ```
