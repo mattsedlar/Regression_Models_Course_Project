@@ -3,9 +3,9 @@ title: "Is an Automatic or Manual Transmission Better for Miles per Gallon?"
 author: "Matthew Sedlar"
 date: "October 19, 2015"
 output:
-  pdf_document: default
   html_document:
     keep_md: yes
+  pdf_document: default
 ---
 
 ## Executive Summary
@@ -32,7 +32,8 @@ analysis$am <- sapply(analysis$am, function(x) ifelse(x==0, "automatic","manual"
 p <- ggplot(analysis) + geom_boxplot(aes(x=am,y=mpg)) +
   xlab("Transmission Type") +
   ylab("Miles per Gallon (U.S.)") +
-  ggtitle("Miles per Gallon by Transmission Type")
+  ggtitle("Miles per Gallon by Transmission Type") +
+  theme(plot.title=element_text(size=9))
 p
 
 ```
@@ -166,6 +167,6 @@ noleverage <- ggplot(transm) + geom_point(aes(x=disp,y=mpg)) +
   xlab("Displacement") +
   ylab("Miles Per Gallon (U.S.)") +
   ggtitle("MPG by Displacement Type for Manual Transmission Vehicles")  +
-  theme(plot.title=element_text(size=10))
+  theme(plot.title=element_text(size=9))
 noleverage
 ```
