@@ -2,13 +2,15 @@
 title: "Is an Automatic or Manual Transmission Better for Miles per Gallon?"
 author: "Matthew Sedlar"
 date: "October 19, 2015"
-output: 
+output:
   pdf_document: default
   html_document:
     keep_md: yes
 ---
 
 ## Executive Summary
+
+This paper looks at question of whether an automatic or manual transmission is better for miles per gallon. It attempts to explain the advantage manual transmissions have over automatic transmittions by fitting a regression model to the dependent variable, mpg, using independent variables, transmission type and the size and power of a vehicle's engine. The result is that better mpg in cars with manual transmissions can be explained by the relationship between gas usage and engine displacement.
 
 ## Exploratory Analysis
 
@@ -37,15 +39,57 @@ p
 
 While the difference between the average mpg for the transmission types is statistically significant (see Appendix A), a simple categorical variable cannot fully explain _why_ there is a difference. We have to explore other variables that can help explain why.
 
-There are several candidates to choose from, including weight, number of cylinders, horsepower, displacement, and number of carburetors (see Appendix B). Several of these variables have something in common: the size of the car and power of the engine. For this report, I'm going to look at displacement, which represents both the size and power of the engine and shares a strong positive correlation with both weight and horsepower (see Appendix C).
+There are several candidates to choose from, including weight, number of cylinders, horsepower, displacement, and number of carburetors (see Appendix B). Several of these variables have something in common: the size and power of the engine. 
 
 ## Fitting a Model
 
-## Hypothesis Testing
+Displacement is [defined](http://askcars.com/2008/07/what-does-engin.html) as the volume of an engine's cylinders, generally an indicator of the engine's size and power. The displacement variable not only correlates with the weight of a car (`r cor(analysis$wt,analysis$disp)`), but also shares a correlation with the number of cylinders (`r cor(analysis$cyl,analysis$disp)`) and horsepower (`r cor(analysis$hp,analysis$disp)`). For this reason I chose to fit a model using displacement to explain the advantage manual cars appear to have over automatic transmissions.
+
+A residual analysis (see Appendix C) shows that the fit is an appropriate model and the equal variability and normality assumptions have not been violated. 
+
+As the coefficients below show, with significance, each decrease in miles per gallon is accompanied by an increase in displacement, 0.028 cubic inches and `r 0.028 + 0.031` cubic inches for automatic and manual transmissions respectively.
+
+```{r echo=FALSE}
+library(knitr)
+fit <- lm(mpg ~ disp * factor(am), data = analysis)
+
+kable(summary(fit)$coef, digits=3)
+
+```
+
+This is illustrated in Figure 2, which also shows that very few cars with manual transmissions exist beyond the average displacement and the two that do have leverage on the regression line (see Appendix D).
+
+#### Figure 2
+
+```{r echo=FALSE, message=FALSE, fig.height=3, fig.width=6.5, fig.align='center'}
+modelp <- ggplot(analysis) +
+  geom_point(aes(x=disp,y=mpg, shape=am), size=4, alpha=0.4) +
+  geom_abline(intercept = coef(fit)[1], slope=coef(fit)[2]) +
+  geom_abline(intercept = coef(fit)[1] + coef(fit)[3],
+              slope=coef(fit)[2] + coef(fit)[4]) +
+  geom_vline(xintercept=mean(analysis$disp)) +
+  xlab("Displacement") +
+  ylab("Miles Per Gallon (U.S.)") +
+  labs(shape="Transmission Type") +
+  ggtitle("MPG by Displacement with Linear Models for Transmission Type") +
+  theme(plot.title=element_text(size=10)) +
+  annotate("text",
+           label="Avg. Displacement",
+           x=mean(analysis$disp) - 10,
+           y=30,
+           angle=90,
+           size=2)
+  
+modelp
+```
 
 ## Conclusion
 
----
+The model I picked infers that manual transmissions have better miles per gallon because of the relationship between gas usage and the size and power of the engine. As the displacement (in cubic inches) increases, the efficiency drops for both transmission types. Essentially, big cars have larger engines and generally have worse mpg. With the exception of two cars in the data set, the cars with worse mpg are automatic. 
+
+My outcomes are based on the assumption that larger displacement equals a bigger car. You would assume a small car modified with a large engine would be an outlier. A greater sample size would help in testing this theory.
+
+\pagebreak
 
 # Appendix
 
@@ -54,7 +98,7 @@ There are several candidates to choose from, including weight, number of cylinde
 $$H_0: \bar{X} = \bar{Y}$$
 $$H_1: \bar{X} \neq \bar{Y}$$
 
-```{r}
+```{r echo=FALSE}
 transa <- subset(analysis,am=="automatic") 
 transm <- subset(analysis,am=="manual")
 
@@ -82,21 +126,46 @@ p.carb <- ggplot(analysis) + geom_point(aes(x=carb,y=mpg)) + facet_grid(.~am) +
 grid.arrange(p.wt,p.cyl,p.hp, p.disp,p.carb,ncol=3,nrow=2)
 ```
 
-### C: Displacement and its Correlation to Weight, Horsepower
+### C: Residual Analysis
 
-Displacement is the volume of an engine's cylinders, a general indicator of its size and power. Since it's safe to assume that large, powerful engines would not be commonplace in smaller cars -- such modifications would be outliers -- I found a strong, positive correlation (`r cor(analysis$disp,analysis$wt)`) between weight and displacement. There's a similar, although less strong (`r cor(analysis$disp,analysis$hp)`), correlation between horsepower (*definition here*) and displacement.
+Figure C1 shows the fitted values of the model plotted against the residuals and finds no apparent relationship or pattern between the two. The residuals appear to be evenly spread above and below 0.  
 
-```{r echo=FALSE, message=FALSE, fig.height=3, fig.width=5, fig.align='center'}
-p.dw <- ggplot(analysis,aes(x=disp,y=wt)) + 
-  geom_point() +
-  stat_smooth(method="lm") +
+#### Figure C1
+```{r echo=FALSE, message=FALSE, fig.height=3, fig.width=4.5, fig.align='center'}
+plot(x=fit$fitted.values,y=fit$residuals, main="Residuals vs Fitted Values")
+```
+
+Figure C2 shows the distribution of residuals to be approximately normal; however, the small sample size should be noted. 
+
+#### Figure C2
+```{r echo=FALSE, message=FALSE, fig.height=3, fig.width=4.5, fig.align='center'}
+d <- density(fit$residuals)
+plot(d, main="Distribution of Fit Residuals")
+```
+
+### D: Leverage
+
+Two cars in the manual transmission group, the Maserati Bora and Ford Pantera L, exert a significant amount of leverage on the regression line. As the hat values below show, both are considerable outliers.
+
+```{r echo=FALSE}
+testfit <- lm(mpg ~ disp, data=transm) 
+hatvalues <- round(hatvalues(testfit),2)
+kable(hatvalues)
+```
+
+By removing the two, and resetting the regression model, the coefficients now show each decrease in miles per gallon is accompanied by an increase in displacement by 0.1352438 cubic inches (as illustrated in Figure D1).
+
+```{r echo=FALSE, message=FALSE, fig.height=3, fig.width=4.5, fig.align='center'}
+# remove two outliers
+transm <- transm[-12,]
+transm <- transm[-10,]
+testfit <- lm(mpg ~ disp, data=transm) 
+
+noleverage <- ggplot(transm) + geom_point(aes(x=disp,y=mpg)) +
+  geom_abline(intercept=coef(testfit)[1], slope=coef(testfit)[2]) +
   xlab("Displacement") +
-  ylab("Weight")
-p.dh <- ggplot(analysis, aes(x=disp,y=hp)) +
-  geom_point() +
-  stat_smooth(method="lm") +
-  xlab("Displacement") +
-  ylab("Horespower")
-
-grid.arrange(p.dw,p.dh,ncol=2,nrow=1, top="Testing Correlations Between Independent X Variables")
+  ylab("Miles Per Gallon (U.S.)") +
+  ggtitle("MPG by Displacement Type for Manual Transmission Vehicles")  +
+  theme(plot.title=element_text(size=10))
+noleverage
 ```
