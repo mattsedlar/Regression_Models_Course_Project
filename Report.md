@@ -1,6 +1,6 @@
 # Is an Automatic or Manual Transmission Better for Miles per Gallon?
 Matthew Sedlar  
-October 23, 2015  
+October 2015  
 
 ## Executive Summary
 
@@ -68,7 +68,15 @@ Figure B2 shows the distribution of residuals to be approximately normal; howeve
 
 ### C: Leverage
 
-Two cars in the manual transmission group, the Maserati Bora and Ford Pantera L, exert a significant amount of leverage on the regression line. As the hat values below show, both are considerable outliers.
+The difference between the average displacement for automatic and manual transmissions is actually statistically significant with a p-value of 0.00023. In Figure C1, you can see two outliers that actually affect the manual transmission group.
+
+#### Figure C1
+
+<img src="Report_files/figure-html/unnamed-chunk-7-1.png" title="" alt="" style="display: block; margin: auto;" />
+
+Two cars in the manual transmission group, the Maserati Bora and Ford Pantera L, exert a significant amount of leverage on the regression line, as the hat values below show.
+
+\pagebreak
 
 
 ---------------  -----
@@ -87,10 +95,8 @@ Maserati Bora     0.35
 Volvo 142E        0.08
 ---------------  -----
 
-By removing the two, and resetting the regression model, the coefficients now show each increase in one cubic inch of displacement is accompanied by a decrease in mpg by 0.1352438 (as illustrated in Figure C1 below).
+By removing the two, and resetting the regression model, the coefficients now show each increase in one cubic inch of displacement is accompanied by a decrease in mpg by 0.1352438 (as illustrated in Figure C2 below).
 
-\pagebreak
+#### Figure C2
 
-#### Figure C1
-
-<img src="Report_files/figure-html/unnamed-chunk-8-1.png" title="" alt="" style="display: block; margin: auto;" />
+<img src="Report_files/figure-html/unnamed-chunk-9-1.png" title="" alt="" style="display: block; margin: auto;" />
