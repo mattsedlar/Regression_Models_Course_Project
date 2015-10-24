@@ -1,14 +1,14 @@
 # Is an Automatic or Manual Transmission Better for Miles per Gallon?
 Matthew Sedlar  
-October 19, 2015  
+October 23, 2015  
 
 ## Executive Summary
 
-This paper looks at question of whether an automatic or manual transmission is better for miles per gallon. It attempts to explain the advantage manual transmissions have over automatic transmittions by fitting a regression model to the dependent variable, mpg, using independent variables, transmission type and the size and power of a vehicle's engine. The result is that better mpg in cars with manual transmissions can be explained by the relationship between gas usage and engine displacement.
+This paper looks at data extracted from the 1974 *Motor Trend* U.S. magazine and attempts to answer whether an automatic or manual transmission is better for miles per gallon. It attempts to explain the advantage manual transmissions have over automatic transmittions by fitting a regression model to the dependent variable, mpg, using the independent variables transmission type and the size and power of a vehicle's engine. The result is that better mpg in cars with manual transmissions can be explained by the relationship between gas usage and engine displacement, but only for the sample provided as it is small and dated.
 
 ## Exploratory Analysis
 
-I started by looking at simple box plot of miles per gallon by automatic and manual transmission types. As figure 1 shows, the interquartile range for automatic transmissions is below the interquartile range of manual transmissions. There certainly appears to be a relationship between better mpg and manual transmissions.
+The data consists of aspects of automobile design and performance for 32 automobiles (1973–74 models). I started by looking at simple box plot of miles per gallon by automatic and manual transmission types. As figure 1 shows, the interquartile range for automatic transmissions is below the interquartile range of manual transmissions. There certainly appears to be a relationship between better mpg and manual transmissions.
 
 #### Figure 1
 
@@ -24,7 +24,7 @@ Displacement is [defined](http://askcars.com/2008/07/what-does-engin.html) as th
 
 A residual analysis (see Appendix C) shows that the fit is an appropriate model and the equal variability and normality assumptions have not been violated. 
 
-As the coefficients below show, with significance, each decrease in miles per gallon is accompanied by an increase in displacement, 0.028 cubic inches and 0.059 cubic inches for automatic and manual transmissions respectively.
+As the coefficients below show, with significance, for each increase in displacement by one cubic inch, there's a decrease in mpg by 0.028 and 0.059 for automatic and manual transmissions respectively.
 
 
                          Estimate   Std. Error   t value   Pr(>|t|)
@@ -42,9 +42,9 @@ This is illustrated in Figure 2, which also shows that very few cars with manual
 
 ## Conclusion
 
-The model I picked infers that manual transmissions have better miles per gallon because of the relationship between gas usage and the size and power of the engine. As the displacement (in cubic inches) increases, the efficiency drops for both transmission types. Essentially, big cars have larger engines and generally have worse mpg. With the exception of two cars in the data set, the cars with worse mpg are automatic. 
+The model I picked infers that manual transmissions have better miles per gallon because of the relationship between gas usage and the size and power of the engine. As the displacement (in cubic inches) increases, the efficiency in mpg drops for both transmission types. Essentially, big cars have larger engines and generally have worse mpg. With the exception of two cars in the data set, the cars with worse mpg are automatic. 
 
-My outcomes are based on the assumption that larger displacement equals a bigger car. You would assume a small car modified with a large engine would be an outlier. A greater sample size would help in testing this theory.
+The problem with this inference is that it not only relies on a small data set, but the data is outdated. Really, the conclusion only applies to 32 models from 1973-1974. It's difficult to draw a conclusion about a population from a sample that is not representative of what people currently drive. I would need a larger, up-to-date data set to make a proper inference about mpg in current models.
 
 \pagebreak
 
