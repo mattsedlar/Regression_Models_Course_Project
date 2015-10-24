@@ -14,15 +14,15 @@ The data consists of aspects of automobile design and performance for 32 automob
 
 <img src="Report_files/figure-html/unnamed-chunk-1-1.png" title="" alt="" style="display: block; margin: auto;" />
 
-While the difference between the average mpg for the transmission types is statistically significant (see Appendix A), a simple categorical variable cannot fully explain _why_ there is a difference. We have to explore other variables that can help explain why.
+While the difference between the average mpg for the transmission types is statistically significant with a p-value of 0.0013736, a simple categorical variable cannot fully explain _why_ there is a difference. We have to explore other variables that can help explain why.
 
-There are several candidates to choose from, including weight, number of cylinders, horsepower, displacement, and number of carburetors (see Appendix B). Several of these variables have something in common: the size and power of the engine. 
+There are several candidates to choose from, including weight, number of cylinders, horsepower, displacement, and number of carburetors (see Appendix A). Several of these variables have something in common: the size and power of the engine. 
 
 ## Fitting a Model
 
 Displacement is [defined](http://askcars.com/2008/07/what-does-engin.html) as the volume of an engine's cylinders, generally an indicator of the engine's size and power. The displacement variable not only correlates with the weight of a car (0.8879799), but also shares a correlation with the number of cylinders (0.9020329) and horsepower (0.7909486). For this reason I chose to fit a model using displacement to explain the advantage manual cars appear to have over automatic transmissions.
 
-A residual analysis (see Appendix C) shows that the fit is an appropriate model and the equal variability and normality assumptions have not been violated. 
+A residual analysis (see Appendix B) shows that the fit is an appropriate model and the equal variability and normality assumptions have not been violated. 
 
 As the coefficients below show, with significance, for each increase in displacement by one cubic inch, there's a decrease in mpg by 0.028 and 0.059 for automatic and manual transmissions respectively.
 
@@ -34,7 +34,7 @@ disp                       -0.028        0.006    -4.435      0.000
 factor(am)manual            7.709        2.503     3.080      0.005
 disp:factor(am)manual      -0.031        0.011    -2.745      0.010
 
-This is illustrated in Figure 2, which also shows that very few cars with manual transmissions exist beyond the average displacement and the two that do have leverage on the regression line (see Appendix D).
+This is illustrated in Figure 2, which also shows that very few cars with manual transmissions exist beyond the average displacement and the two that do have leverage on the regression line (see Appendix C).
 
 #### Figure 2
 
@@ -50,43 +50,23 @@ The problem with this inference is that it not only relies on a small data set, 
 
 # Appendix
 
-### A: Automatic vs. Manual Hypothesis Testing
+### A: Independent Variables by MPG, Faceted by Transmission Type
 
-$$H_0: \bar{X} = \bar{Y}$$
-$$H_1: \bar{X} \neq \bar{Y}$$
+![](Report_files/figure-html/unnamed-chunk-4-1.png) 
 
+### B: Residual Analysis
 
-```
-## 
-## 	Welch Two Sample t-test
-## 
-## data:  transa$mpg and transm$mpg
-## t = -3.7671, df = 18.332, p-value = 0.001374
-## alternative hypothesis: true difference in means is not equal to 0
-## 95 percent confidence interval:
-##  -11.280194  -3.209684
-## sample estimates:
-## mean of x mean of y 
-##  17.14737  24.39231
-```
+Figure B1 shows the fitted values of the model plotted against the residuals and finds no apparent relationship or pattern between the two. The residuals appear to be evenly spread above and below 0.  
 
-### B: Independent Variables by MPG, Faceted by Transmission Type
+#### Figure B1
+<img src="Report_files/figure-html/unnamed-chunk-5-1.png" title="" alt="" style="display: block; margin: auto;" />
 
-![](Report_files/figure-html/unnamed-chunk-5-1.png) 
+Figure B2 shows the distribution of residuals to be approximately normal; however, the small sample size should be noted. 
 
-### C: Residual Analysis
-
-Figure C1 shows the fitted values of the model plotted against the residuals and finds no apparent relationship or pattern between the two. The residuals appear to be evenly spread above and below 0.  
-
-#### Figure C1
+#### Figure B2
 <img src="Report_files/figure-html/unnamed-chunk-6-1.png" title="" alt="" style="display: block; margin: auto;" />
 
-Figure C2 shows the distribution of residuals to be approximately normal; however, the small sample size should be noted. 
-
-#### Figure C2
-<img src="Report_files/figure-html/unnamed-chunk-7-1.png" title="" alt="" style="display: block; margin: auto;" />
-
-### D: Leverage
+### C: Leverage
 
 Two cars in the manual transmission group, the Maserati Bora and Ford Pantera L, exert a significant amount of leverage on the regression line. As the hat values below show, both are considerable outliers.
 
@@ -107,6 +87,10 @@ Maserati Bora     0.35
 Volvo 142E        0.08
 ---------------  -----
 
-By removing the two, and resetting the regression model, the coefficients now show each decrease in miles per gallon is accompanied by an increase in displacement by 0.1352438 cubic inches (as illustrated in Figure D1).
+By removing the two, and resetting the regression model, the coefficients now show each increase in one cubic inch of displacement is accompanied by a decrease in mpg by 0.1352438 (as illustrated in Figure C1 below).
 
-<img src="Report_files/figure-html/unnamed-chunk-9-1.png" title="" alt="" style="display: block; margin: auto;" />
+\pagebreak
+
+#### Figure C1
+
+<img src="Report_files/figure-html/unnamed-chunk-8-1.png" title="" alt="" style="display: block; margin: auto;" />

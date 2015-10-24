@@ -18,7 +18,7 @@ The data consists of aspects of automobile design and performance for 32 automob
 
 #### Figure 1
 
-```{r echo=FALSE, message=FALSE, fig.height=3, fig.width=4.5, fig.align='center'}
+```{r echo=FALSE, message=FALSE, fig.height=3, fig.width=5, fig.align='center'}
 
 library(ggplot2)
 library(gridExtra)
@@ -33,20 +33,26 @@ p <- ggplot(analysis) + geom_boxplot(aes(x=am,y=mpg)) +
   xlab("Transmission Type") +
   ylab("Miles per Gallon (U.S.)") +
   ggtitle("Miles per Gallon by Transmission Type") +
-  theme(plot.title=element_text(size=9))
+  theme(plot.title=element_text(size=10))
 p
+
+# for t test
+transa <- subset(analysis,am=="automatic") 
+transm <- subset(analysis,am=="manual")
+
+t <- t.test(transa$mpg,transm$mpg)
 
 ```
 
-While the difference between the average mpg for the transmission types is statistically significant (see Appendix A), a simple categorical variable cannot fully explain _why_ there is a difference. We have to explore other variables that can help explain why.
+While the difference between the average mpg for the transmission types is statistically significant with a p-value of `r t$p.value`, a simple categorical variable cannot fully explain _why_ there is a difference. We have to explore other variables that can help explain why.
 
-There are several candidates to choose from, including weight, number of cylinders, horsepower, displacement, and number of carburetors (see Appendix B). Several of these variables have something in common: the size and power of the engine. 
+There are several candidates to choose from, including weight, number of cylinders, horsepower, displacement, and number of carburetors (see Appendix A). Several of these variables have something in common: the size and power of the engine. 
 
 ## Fitting a Model
 
 Displacement is [defined](http://askcars.com/2008/07/what-does-engin.html) as the volume of an engine's cylinders, generally an indicator of the engine's size and power. The displacement variable not only correlates with the weight of a car (`r cor(analysis$wt,analysis$disp)`), but also shares a correlation with the number of cylinders (`r cor(analysis$cyl,analysis$disp)`) and horsepower (`r cor(analysis$hp,analysis$disp)`). For this reason I chose to fit a model using displacement to explain the advantage manual cars appear to have over automatic transmissions.
 
-A residual analysis (see Appendix C) shows that the fit is an appropriate model and the equal variability and normality assumptions have not been violated. 
+A residual analysis (see Appendix B) shows that the fit is an appropriate model and the equal variability and normality assumptions have not been violated. 
 
 As the coefficients below show, with significance, for each increase in displacement by one cubic inch, there's a decrease in mpg by 0.028 and `r 0.028 + 0.031` for automatic and manual transmissions respectively.
 
@@ -58,7 +64,7 @@ kable(summary(fit)$coef, digits=3)
 
 ```
 
-This is illustrated in Figure 2, which also shows that very few cars with manual transmissions exist beyond the average displacement and the two that do have leverage on the regression line (see Appendix D).
+This is illustrated in Figure 2, which also shows that very few cars with manual transmissions exist beyond the average displacement and the two that do have leverage on the regression line (see Appendix C).
 
 #### Figure 2
 
@@ -71,7 +77,7 @@ modelp <- ggplot(analysis) +
   geom_vline(xintercept=mean(analysis$disp)) +
   xlab("Displacement") +
   ylab("Miles Per Gallon (U.S.)") +
-  labs(shape="Transmission Type") +
+  labs(shape="Transmission") +
   ggtitle("MPG by Displacement with Linear Models for Transmission Type") +
   theme(plot.title=element_text(size=10)) +
   annotate("text",
@@ -94,19 +100,7 @@ The problem with this inference is that it not only relies on a small data set, 
 
 # Appendix
 
-### A: Automatic vs. Manual Hypothesis Testing
-
-$$H_0: \bar{X} = \bar{Y}$$
-$$H_1: \bar{X} \neq \bar{Y}$$
-
-```{r echo=FALSE}
-transa <- subset(analysis,am=="automatic") 
-transm <- subset(analysis,am=="manual")
-
-t.test(transa$mpg,transm$mpg)
-```
-
-### B: Independent Variables by MPG, Faceted by Transmission Type
+### A: Independent Variables by MPG, Faceted by Transmission Type
 
 ```{r echo=FALSE}
 p.wt <- ggplot(analysis) + geom_point(aes(x=wt,y=mpg)) + facet_grid(.~am) +
@@ -127,24 +121,24 @@ p.carb <- ggplot(analysis) + geom_point(aes(x=carb,y=mpg)) + facet_grid(.~am) +
 grid.arrange(p.wt,p.cyl,p.hp, p.disp,p.carb,ncol=3,nrow=2)
 ```
 
-### C: Residual Analysis
+### B: Residual Analysis
 
-Figure C1 shows the fitted values of the model plotted against the residuals and finds no apparent relationship or pattern between the two. The residuals appear to be evenly spread above and below 0.  
+Figure B1 shows the fitted values of the model plotted against the residuals and finds no apparent relationship or pattern between the two. The residuals appear to be evenly spread above and below 0.  
 
-#### Figure C1
-```{r echo=FALSE, message=FALSE, fig.height=3, fig.width=4.5, fig.align='center'}
+#### Figure B1
+```{r echo=FALSE, message=FALSE, fig.height=3, fig.width=5, fig.align='center'}
 plot(x=fit$fitted.values,y=fit$residuals, main="Residuals vs Fitted Values")
 ```
 
-Figure C2 shows the distribution of residuals to be approximately normal; however, the small sample size should be noted. 
+Figure B2 shows the distribution of residuals to be approximately normal; however, the small sample size should be noted. 
 
-#### Figure C2
-```{r echo=FALSE, message=FALSE, fig.height=3, fig.width=4.5, fig.align='center'}
+#### Figure B2
+```{r echo=FALSE, message=FALSE, fig.height=3, fig.width=5, fig.align='center'}
 d <- density(fit$residuals)
 plot(d, main="Distribution of Fit Residuals")
 ```
 
-### D: Leverage
+### C: Leverage
 
 Two cars in the manual transmission group, the Maserati Bora and Ford Pantera L, exert a significant amount of leverage on the regression line. As the hat values below show, both are considerable outliers.
 
@@ -154,7 +148,11 @@ hatvalues <- round(hatvalues(testfit),2)
 kable(hatvalues)
 ```
 
-By removing the two, and resetting the regression model, the coefficients now show each decrease in miles per gallon is accompanied by an increase in displacement by 0.1352438 cubic inches (as illustrated in Figure D1).
+By removing the two, and resetting the regression model, the coefficients now show each increase in one cubic inch of displacement is accompanied by a decrease in mpg by 0.1352438 (as illustrated in Figure C1 below).
+
+\pagebreak
+
+#### Figure C1
 
 ```{r echo=FALSE, message=FALSE, fig.height=3, fig.width=4.5, fig.align='center'}
 # remove two outliers
